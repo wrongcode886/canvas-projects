@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+</head>
+<body>
+
+	<canvas id="sd" style="height:200px;width:200px;display: block"></canvas>
+<script type="text/javascript">
+  function randColor(){
+    return 'rgb('+ Math.floor(Math.random()*255)+','+ Math.floor(Math.random()*255) +','+ Math.floor(Math.random()*255) +')'
+  }
+
+  window.onload=function(){
+  	var canvas=document.getElementById('sd');
+    var ctx=canvas.getContext('2d');
+    ctx.fillStyle=randColor();
+    ctx.arc(50,50,10,0,2*Math.PI);
+    ctx.fill();
+
+  }
+
+	</script>
+	
+</body>
+</html>

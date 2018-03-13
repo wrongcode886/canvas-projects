@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<style type="text/css" media="screen">
+		.container{
+			width: 450px;
+			margin: 0 auto;
+		}
+		img{
+			width:450px;
+			height: 300px;
+		}
+	</style>
+</head>
+<body>
+	<div class="container">
+		<img id="image" src="img/girl.jpg" alt=""><br>
+		<button type="button" id="bigBtn">放大</button>
+		<button type="button" id="smallBtn">缩小</button>
+	</div>
+
+
+	<script type="text/javascript">
+		window.onload=function(){
+		var image=document.getElementById("image");
+		var bigBtn=document.getElementById("bigBtn");
+		var smallBtn=document.getElementById("smallBtn");
+
+		var maxImage=image.width*2;
+		bigBtn.onclick =function(){
+			max();
+		}
+
+		function max(){
+
+			var endWidth=image.width*1.3;
+			var endHeight=image.height*1.3;
+
+			var maxTimer=setInterval(function(){
+				if(image.width<endWidth){
+					image.width=image.width*1.05;
+					image.height=image.height*1.05;
+				}
+			},10);
+		}
+	}
+	</script>
+</body>
+</html>

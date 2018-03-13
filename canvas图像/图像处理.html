@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+	<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<title>Document</title>
+	</head>
+	<body>
+		<div style="height:460px;width:1220px; margin:10px auto;">
+			<canvas id="canvasa" width="600" height="450" style="display:inline-block;border:1px solid #ccc;margin-right:10px;">
+				您的浏览器可能不支持canvas，请更换浏览器重试~	
+			</canvas>
+			<canvas id="canvasb" width="600" height="450" style="display: inline-block;border:1px solid #ccc;">
+				您的浏览器可能不支持canvas，请更换浏览器重试~	
+			</canvas>
+		</div>	
+		<a href="javascript:greyEffect()" style="display:block;margin-top:10px;text-align: center">灰阶滤镜</a>
+		<a href="javascript:blackEffect()" style="display:block;margin-top:10px;text-align: center">黑阶滤镜</a>
+		<a href="javascript:reverseEffect()" style="display:block;margin-top:10px;text-align: center">反转滤镜</a>
+		<a href="javascript:blurEffect()" style="display:block;margin-top:10px;text-align: center">模糊滤镜</a>
+		<a href="javascript:mosaicffect()" style="display:block;margin-top:10px;text-align: center">马赛克滤镜</a>
+
+		<script type="text/javascript">
+			var canvasa = document.getElementById("canvasa");
+			var ctxa = canvasa.getContext('2d');
+			var canvasb = document.getElementById("canvasb");
+			var ctxb = canvasb.getContext('2d');
+			var image = new Image();
+
+			window.onload = function(){
+				image.src = "img/girl.jpg";
+				image.onload = function(){
+					ctxa.drawImage(image,0,0,canvasa.width,canvasa.height);
+				}
+			}
+
+			function greyEffect(){
+				var imageData = ctxa.getImageData(0,0,canvasa.width,canvasa.height);
+				var piexlData = imageData.data;
+
+				for(var i=0;i<canvasb.width*canvasb.height;i++){
+					var r = piexlData[4*i+0];
+					var g = piexlData[4*i+1];
+					var b = piexlData[4*i+2];
+					var grey = r*0.3+g*0.59+b*0.11;
+					piexlData[4*i+0] = grey;
+					piexlData[4*i+1] = grey;
+					piexlData[4*i+2] = grey;
+				}	
+				ctxb.putImageData(imageData,0,0,0,0,canvasb.width,canvasb.height);
+			}
+
+			function blackEffect(){
+				var imageData = ctxa.getImageData(0,0,canvasa.width,canvasa.height);
+				var piexlData = imageData.data;
+
+				for(var i=0;i<canvasb.width*canvasb.height;i++){
+					var r = piexlData[4*i+0];
+					var g = piexlData[4*i+1];
+					var b = piexlData[4*i+2];
+					var grey = r*0.3+g*0.59+b*0.11;
+
+					grey>255/2? v=255:v=0;
+					piexlData[4*i+0] = v;
+					piexlData[4*i+1] = v;
+					piexlData[4*i+2] = v;
+
+				}	
+				ctxb.putImageData(imageData,0,0,0,0,canvasb.width,canvasb.height);
+			}
+
+			function reverseEffect(){
+				var imageData = ctxa.getImageData(0,0,canvasa.width,canvasa.height);
+				var piexlData = imageData.data;
+
+				for(var i=0;i<canvasb.width*canvasb.height;i++){
+					var r = piexlData[4*i+0];
+					var g = piexlData[4*i+1];
+					var b = piexlData[4*i+2];
+					piexlData[4*i+0] = 255 - r;
+					piexlData[4*i+1] = 255 - g;
+					piexlData[4*i+2] = 255 - b;
+				}	
+				ctxb.putImageData(imageData,0,0,0,0,canvasb.width,canvasb.height);
+			}
+
+			function blurEffect(){
+				var tempImageData = ctxa.getImageData(0,0,canvasa.width,canvasa.height);
+				var tempPiexlData = tempImageData.data;
+
+				var imageData = ctxa.getImageData(0,0,canvasa.width,canvasa.height);
+				var piexlData = imageData.data;
+
+				var blurR = 3;
+				var totalnum = (2*blurR+1)*(2*blurR+1);
+				for(var i=blurR;i<canvasb.height-blurR;i++){
+					for(var j=blurR;j<canvasb.width-blurR;j++){
+
+						var totalr=0,totalg=0;totalb=0;
+						for(var dx=-blurR;dx<=blurR;dx++){
+							for(var dy=-blurR;dy<=blurR;dy++){
+
+								var x = i+dx;
+								var y = j+dy;
+
+								var p = x*canvasb.width+y;
+								totalr += tempPiexlData[p*4+0]; 
+								totalg += tempPiexlData[p*4+1]; 
+								totalb += tempPiexlData[p*4+2];
+							}
+						}
+
+						var p = i*canvasb.width+j;
+						piexlData[p*4+0] = totalr/totalnum; 
+						piexlData[p*4+1] = totalg/totalnum; 
+						piexlData[p*4+2] = totalb/totalnum;
+				}
+				
+				}	
+				ctxb.putImageData(imageData,0,0,0,0,canvasb.width,canvasb.height);
+			}		
+
+			function mosaicffect(){
+				var tempImageData = ctxa.getImageData(0,0,canvasa.width,canvasa.height);
+				var tempPiexlData = tempImageData.data;
+
+				var imageData = ctxa.getImageData(0,0,canvasa.width,canvasa.height);
+				var piexlData = imageData.data;
+
+				var size=16;
+				var totalnum = size*size;
+				for(var i=0;i<canvasb.height;i+=size){
+					for(var j=0;j<canvasb.width;j+=size){
+
+						var totalr=0,totalg=0;totalb=0;
+						for(var dx=0;dx<=size;dx++){
+							for(var dy=0;dy<=size;dy++){
+
+								var x = i+dx;
+								var y = j+dy;
+
+								var p = x*canvasb.width+y;
+								totalr += tempPiexlData[p*4+0]; 
+								totalg += tempPiexlData[p*4+1]; 
+								totalb += tempPiexlData[p*4+2];
+							}
+						}
+
+						var p = i*canvasb.width+j;
+						var resr = totalr/totalnum; 
+						var resg = totalg/totalnum; 
+						var resb = totalb/totalnum;
+
+						for(var dx=0;dx<size;dx++){
+							for(var dy=0;dy<size;dy++){
+
+								var x=i+dx;
+								var y=j+dy;
+								var p=x*canvasb.width+y;
+
+								piexlData[p*4+0] = resr;
+								piexlData[p*4+1] = resg;
+								piexlData[p*4+2] = resb;
+							}
+						}
+					}
+				
+				}	
+				ctxb.putImageData(imageData,0,0,0,0,canvasb.width,canvasb.height);
+			}
+
+		</script>
+	</body>
+	</html>	

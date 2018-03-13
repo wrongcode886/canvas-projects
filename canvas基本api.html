@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>canvas1</title>
+</head>
+<body>
+	<canvas id="canvas"  width="800" height="600"  style="display: block;border:1px dotted #ccc;margin:0 auto;">
+		您的浏览器可能不支持Canvas，请更换浏览器重试~
+	</canvas>
+
+
+	<script type="text/javascript">
+		window.onload = function(){
+			var canvas = document.getElementById("canvas");
+			// canvas.width=400;
+			// canvas.height=300;
+			var ctx = canvas.getContext('2d');
+
+			ctx.save();
+			ctx.beginPath();
+			ctx.moveTo(100,100);
+			ctx.lineTo(300,100);
+			ctx.lineTo(340,180);
+			ctx.lineTo(60,180);
+			ctx.lineTo(100,100);
+			ctx.lineWidth=10;
+			ctx.lineCap="round";
+			ctx.strokeStyle="red";
+			ctx.stroke();
+
+			ctx.fillStyle="#ccc";
+			ctx.fill();
+			ctx.restore();
+
+			ctx.save();
+			ctx.beginPath();
+			ctx.moveTo(100,100);
+			ctx.lineTo(200,100);
+			ctx.lineTo(200,200);
+			ctx.lineTo(100,200);
+			ctx.lineTo(100,100);	
+			ctx.strokeStyle="yellow";
+			ctx.stroke();
+			ctx.restore();
+
+			
+			for(var i=0;i<10;i++){
+				ctx.beginPath();
+				ctx.arc(400+40*i,80,10,0,2*Math.PI*(i+1)/10,false);
+
+				ctx.stroke();
+			}
+
+			for(var i=0;i<10;i++){
+				ctx.beginPath();
+				ctx.arc(400+40*i,150,10,0,2*Math.PI*(i+1)/10,true);
+				
+				ctx.stroke();
+			}
+			
+
+		}
+	</script>
+</body>
+</html>

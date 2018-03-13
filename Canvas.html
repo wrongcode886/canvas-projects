@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>LiebeU</title>
+	<meta charset="utf-8">
+	<style>
+		* { margin: 0;padding: 0; }
+	</style>
+</head>
+<body>
+<canvas id="canvas">
+	Ich liebe dich!
+</canvas>
+
+<script>
+window.canvas = document.getElementById('canvas');
+window.ctx = window.canvas.getContext('2d');
+
+(function()
+{
+	canvas.width = window.innerWidth;
+	canvas.height = window.innerHeight;
+})();
+
+window.circles = [];
+window.circleCount = 200;
+window.timer = null;
+
+//  make animation to be 30fps
+window.lastDrawed = false;
+
+window.onload = function()
+{
+	let maxRarius = 36, minRadius = 10, circleCount = window.circleCount;
+	for (let i = 0;i < circleCount;i ++)
+	{
+		window.circles['' + i] = new Circle('' + i, rand(maxRarius, canvas.width - maxRarius), 
+			rand(maxRarius, canvas.height - maxRarius), rand(minRadius, maxRarius), 
+			randColor(), rand(1), rand(50) - 25, rand(50) - 25);
+	}
+	draw();
+}
+
+window.canvas.addEventListener('click', function(e)
+{
+	window.cancelAnimationFrame(window.timer);
+});
+
+function rand(max, min)
+{
+	if (min == undefined)
+	{
+		if (max > 1)
+		{
+			return Math.floor(Math.random() * max);
+		}
+		return Math.random();
+	}
+	else
+	{
+		return Math.random() * (max - min) + min;
+	}
+}
+
+function randColor()
+{
+	return 'rgb(' + rand(256) + ',' + rand(256) + ',' + rand(256) + ')';
+}
+
+function draw()
+{
+	window.lastDrawed = !window.lastDrawed;
+	if (!window.lastDrawed)
+	{
+		// collideCheck();
+		window.ctx.clearRect(0, 0, canvas.width, canvas.height);
+		window.circles.forEach(function(ele, index, array)
+		{
+			ele.draw();
+			ele.update();
+		});
+	}
+	window.timer = window.requestAnimationFrame(draw);
+}
+
+function collideCheck()
+{
+	let circles = window.circles;
+	let circleKeys = Object.keys(circles);
+	let keyCount = circleKeys.length;
+	for (let i = keyCount - 1;i > 0;i --)
+	{
+		for (let j = i - 1;j >= 0;j --)
+		{
+			if (isCollide(circles[circleKeys[i]], circles[circleKeys[j]]))
+			{
+				changeSpeed(circles[circleKeys[i]], circles[circleKeys[j]]);
+			}
+		}
+	}
+}
+
+function isCollide(circleA, circleB)
+{
+	if (circleA == undefined || circleB == undefined)
+	{
+		return ;
+	}
+	return circleA.center.distance(circleB.center) <= circleA.r + circleB.r;
+}
+
+function changeSpeed(circleA, circleB)
+{
+	if (circleA.area > circleB.area)
+	{
+		circleA.area += circleB.area;
+		circleA.velocity = (circleA.velocity.multiply(circleA.area).add(circleB.velocity.multiply(circleB.area))).devide(circleA.area);
+		circleA.r = Math.sqrt(circleA.area / Math.PI);
+		delete circles[circleB.key];
+	}
+	else
+	{
+		circleB.area += circleA.area;
+		circleB.velocity = (circleB.velocity.multiply(circleB.area).add(circleA.velocity.multiply(circleA.area))).devide(circleB.area);
+		circleB.r = Math.sqrt(circleB.area / Math.PI);
+		delete circles[circleA.key];
+	}
+}
+
+
+function Circle(key, x, y, r, color, alpha, vx, vy)
+{
+	this.key = key;
+	this.center = new Vector(x, y);
+	this.r = r;
+	this.color = color;
+	this.alpha = alpha;
+	this.curAlpha = alpha;
+	this.velocity = new Vector(vx, vy);
+	this.area = Math.PI * this.r * this.r;
+}
+
+Circle.prototype.draw = function()
+{
+	let ctx = window.ctx;
+	ctx.beginPath();
+	ctx.globalAlpha = this.curAlpha;
+	ctx.fillStyle = this.color;
+	ctx.arc(this.center.x, this.center.y, this.r, 0, 2 * Math.PI);
+	ctx.fill();
+}
+
+Circle.prototype.update = function()
+{
+	this.center = this.center.add(this.velocity.devide(30));
+	if (this.center.x - this.r < 0 || this.center.x + this.r > canvas.width)
+	{
+		this.velocity.x = - this.velocity.x;
+	}
+	if (this.center.y - this.r < 0 || this.center.y + this.r > canvas.height)
+	{
+		this.velocity.y = - this.velocity.y;
+	}
+}
+
+function Vector(x, y)
+{
+	this.x = x;
+	this.y = y;
+}
+
+Vector.prototype.add = function(v)
+{
+	return new Vector(this.x + v.x, this.y + v.y);
+}
+
+Vector.prototype.multiply = function(num)
+{
+	return new Vector(this.x * num, this.y * num);
+}
+
+Vector.prototype.devide = function(num)
+{
+	return new Vector(this.x / num ,this.y / num);
+}
+
+Vector.prototype.distance = function(v)
+{
+	return Math.hypot(this.x - v.x, this.y - v.y);
+}
+
+Vector.prototype.copy = function()
+{
+	return new Vector(this.x, this.y);
+}
+
+</script>
+</body>
+</html>

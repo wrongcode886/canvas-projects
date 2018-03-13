@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+</head>
+<body style="background: #000;">
+	<canvas id="canvas" style="display:block;border:1px splid #ccc;margin:0px auto">  您的浏览器可能不支持canvas，请更换浏览器重试~	
+	</canvas>
+	<input type="range" id="scale-image" step="0.01" min="0.5" max="3.0" value="1.0" style="display: block;width:380px;margin:10px auto">
+
+	<canvas id="water-mark" style="display:none;border:1px splid #ccc;margin:0px auto">  您的浏览器可能不支持canvas，请更换浏览器重试~	
+	</canvas>
+	
+	<script type="text/javascript">
+		var canvas = document.getElementById("canvas");
+		var slider = document.getElementById("scale-image");
+		var ctx = canvas.getContext('2d');
+		var image = new Image();
+
+		var watermarkCanvas = document.getElementById("water-mark");
+		var watermarkCTX = watermarkCanvas.getContext('2d');
+
+		window.onload=function(){
+			canvas.width=960;
+			canvas.height=600;
+
+			var scale = slider.value;
+			image.src="img/girl.jpg";
+			image.onload=function(){
+				//ctx.drawImage(image,0,0,canvas.width,canvas.height);
+				scaleImage(scale);
+
+				slider.onmousemove = function(){
+					scale = slider.value;
+					scaleImage(scale);
+					console.log(scale)
+				}
+			}
+			//setting watermark
+			watermarkCTX.width = 300;
+			watermarkCTX.heigth = 80;
+
+			watermarkCTX.font = "bold 36px Arial";
+			watermarkCTX.fillStyle = "rgba(0,0,0,0.4)";
+			watermarkCTX.textBaseline = "middle";
+			watermarkCTX.fillText("==windows==",20,50);
+
+		}
+		
+		
+		function scaleImage(scale){
+			var imageWidth = canvas.width * scale;
+			var imageHeight = canvas.height * scale;
+
+			var dx = canvas.width/2 - imageWidth/2;
+			var dy = canvas.height/2 - imageHeight/2;
+
+			ctx.clearRect(0,0,canvas.width,canvas.height);
+			ctx.drawImage(image,dx,dy,imageWidth,imageHeight);
+
+
+			ctx.drawImage(watermarkCanvas,canvas.width - watermarkCanvas.width,canvas.height - watermarkCanvas.height)
+
+		}
+
+	</script>
+</body>
+</html>
